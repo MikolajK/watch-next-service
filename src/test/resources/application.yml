@@ -1,0 +1,6 @@
+quarkus:
+  log:
+    level: DEBUG
+omdb:
+  base-url: test-url
+  api-key: test-api-key

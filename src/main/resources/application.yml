@@ -1,0 +1,3 @@
+omdb:
+  base-url: http://www.omdbapi.com/
+  # api-key from env variables
