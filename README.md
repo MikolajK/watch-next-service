@@ -7,4 +7,4 @@ The project has been developed as part of [Day[9] 30 Days Project](https://day9.
 State: In Development
 
 ## Running
-Use `mvn quarkus:dev` to run the service.
+Use `mvn quarkus:dev` to run the service. You need to configure the API key either in the `application.yml` file or via env variables using `OMDB_API_KEY`.
