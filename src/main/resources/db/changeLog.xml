@@ -1,0 +1,47 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+  <changeSet author="quarkus" id="1">
+    <createTable tableName="watchable">
+      <column name="imdb_id" type="VARCHAR(32)"/>
+      <column name="poster_url" type="VARCHAR(255)"/>
+      <column name="title" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="year" type="VARCHAR(4)"/>
+    </createTable>
+
+    <createTable tableName="watchable_list">
+      <column name="list_id" type="NUMBER"/>
+      <column name="list_name" type="VARCHAR(64)"/>
+    </createTable>
+
+    <createTable tableName="watchable_list_assignment">
+      <column name="imdb_id" type="VARCHAR(32) "/>
+      <column name="list_id" type="NUMBER" />
+    </createTable>
+
+    <createTable tableName="user_list_assignment">
+      <column name="user_id" type="VARCHAR(32) "/>
+      <column name="list_id" type="NUMBER" />
+    </createTable>
+
+    <createSequence
+        incrementBy="5"
+        minValue="1"
+        ordered="true"
+        sequenceName="watchable_list_sequence"
+        startValue="1"/>
+
+<!--    TODO: Check why Hibernate needs it-->
+    <createSequence
+        incrementBy="1"
+        minValue="1"
+        ordered="true"
+        sequenceName="hibernate_sequence"
+        startValue="1"/>
+  </changeSet>
+</databaseChangeLog>

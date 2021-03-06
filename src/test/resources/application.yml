@@ -1,6 +1,24 @@
 quarkus:
+  datasource:
+    username: service
+    password: service
+    db-kind: mariadb
+    jdbc:
+      url: jdbc:mysql://localhost:3306/watchable_watchnext
+  hibernate-orm:
+    log:
+      sql: true
+  http:
+    access-log:
+      enabled: true
+      pattern: long
+    cors: true
+  liquibase:
+    migrate-at-start: true
+    clean-at-start: true
   log:
     level: DEBUG
+
 omdb:
   base-url: test-url
   api-key: test-api-key

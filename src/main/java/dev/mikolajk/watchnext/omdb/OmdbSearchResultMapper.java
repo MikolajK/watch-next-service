@@ -1,10 +1,9 @@
 package dev.mikolajk.watchnext.omdb;
 
-import dev.mikolajk.watchnext.model.WatchableSearchRepresentation;
-import dev.mikolajk.watchnext.model.WatchableSearchResults;
 import dev.mikolajk.watchnext.omdb.model.OmdbSearchResult;
 import dev.mikolajk.watchnext.omdb.model.OmdbWatchableSearchRepresentation;
-import java.util.Comparator;
+import dev.mikolajk.watchnext.service.model.search.WatchableSearchResults;
+import dev.mikolajk.watchnext.service.model.watchable.SimpleWatchableRepresentation;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,7 +12,7 @@ import org.mapstruct.Mapping;
 public interface OmdbSearchResultMapper {
 
     @Mapping(target = "posterUrl", source = "poster")
-    WatchableSearchRepresentation toWatchableSearchRepresentation(OmdbWatchableSearchRepresentation omdbWatchable);
+    SimpleWatchableRepresentation toWatchableSearchRepresentation(OmdbWatchableSearchRepresentation omdbWatchable);
 
     default WatchableSearchResults toWatchableSearchResults(OmdbSearchResult omdbSearchResult) {
         int totalResults = omdbSearchResult.getTotalResults();

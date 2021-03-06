@@ -3,11 +3,12 @@ package dev.mikolajk.watchnext.resource;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.mikolajk.watchnext.model.WatchableSearchRepresentation;
-import dev.mikolajk.watchnext.model.WatchableSearchResults;
 import dev.mikolajk.watchnext.omdb.model.OmdbSearchResult;
 import dev.mikolajk.watchnext.omdb.model.OmdbWatchableSearchRepresentation;
+import dev.mikolajk.watchnext.service.model.search.WatchableSearchResults;
+import dev.mikolajk.watchnext.service.model.watchable.SimpleWatchableRepresentation;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.http.HttpStatus;
@@ -49,6 +50,7 @@ class WatchableSearchApiIT extends OmdbApiTestBase {
 
             WatchableSearchResults results = given()
                 .queryParam("query", queryValue)
+                .contentType(ContentType.JSON)
                 .when()
                 .post(BASE_PATH)
                 .then()
@@ -58,16 +60,16 @@ class WatchableSearchApiIT extends OmdbApiTestBase {
 
             assertThat(results.getTotalPages()).isOne();
             assertThat(results.getTotalResults()).isEqualTo(2);
-            List<WatchableSearchRepresentation> watchableRepresentations = results.getResults();
+            List<SimpleWatchableRepresentation> watchableRepresentations = results.getResults();
 
-            WatchableSearchRepresentation knivesOut = watchableRepresentations.get(0);
+            SimpleWatchableRepresentation knivesOut = watchableRepresentations.get(0);
             verifySearchResult(knivesOut, "Knives Out", "2019");
 
-            WatchableSearchRepresentation knivesOriginals = watchableRepresentations.get(1);
+            SimpleWatchableRepresentation knivesOriginals = watchableRepresentations.get(1);
             verifySearchResult(knivesOriginals, "Knives Originals", "2003");
         }
 
-        private void verifySearchResult(WatchableSearchRepresentation result, String title, String year) {
+        private void verifySearchResult(SimpleWatchableRepresentation result, String title, String year) {
             assertThat(result.getTitle()).isEqualTo(title);
             assertThat(result.getYear()).isEqualTo(year);
             assertThat(result.getImdbId()).isEqualTo(IMDB_ID_PREFIX + title);
