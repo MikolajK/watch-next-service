@@ -14,4 +14,6 @@ public interface WatchableService {
     List<SimpleWatchableListRepresentation> getLists();
 
     DetailedWatchableListRepresentation getList(long listId);
+
+    void addToList(long listId, List<String> imdbIds);
 }

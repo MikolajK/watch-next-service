@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import dev.mikolajk.watchnext.omdb.model.OmdbSearchResult;
-import dev.mikolajk.watchnext.omdb.model.OmdbWatchableSearchRepresentation;
+import dev.mikolajk.watchnext.omdb.model.SimpleOmdbWatchableRepresentation;
 import dev.mikolajk.watchnext.service.model.search.WatchableSearchResults;
 import dev.mikolajk.watchnext.service.model.watchable.SimpleWatchableRepresentation;
 import io.quarkus.test.junit.QuarkusTest;
@@ -23,7 +23,6 @@ class WatchableSearchApiIT extends OmdbApiTestBase {
 
     private static final String BASE_PATH = "/watchable/search";
     private static final String POSTERS_URL = "http://posters.fakesite/";
-    private static final String API_KEY = "test-api-key";
     private static final String TYPE = "movie";
     private static final String IMDB_ID_PREFIX = "imdbid:";
 
@@ -77,8 +76,8 @@ class WatchableSearchApiIT extends OmdbApiTestBase {
         }
     }
 
-    private OmdbWatchableSearchRepresentation omdbWatchableSearchResult(String title, String year) {
-        return new OmdbWatchableSearchRepresentation()
+    private SimpleOmdbWatchableRepresentation omdbWatchableSearchResult(String title, String year) {
+        return new SimpleOmdbWatchableRepresentation()
             .withTitle(title)
             .withYear(year)
             .withPoster(POSTERS_URL + title)

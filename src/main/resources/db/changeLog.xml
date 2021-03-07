@@ -4,10 +4,13 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-  <changeSet author="quarkus" id="1">
+  <changeSet author="service" id="1">
     <createTable tableName="watchable">
       <column name="imdb_id" type="VARCHAR(32)"/>
       <column name="poster_url" type="VARCHAR(255)"/>
+      <column name="genre" type="VARCHAR(255)"/>
+      <column name="plot_summary" type="VARCHAR(2048)"/>
+      <column name="runtime" type="VARCHAR(32)"/>
       <column name="title" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>

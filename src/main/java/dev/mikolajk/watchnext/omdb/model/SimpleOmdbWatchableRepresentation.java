@@ -14,7 +14,7 @@ import lombok.With;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class OmdbWatchableSearchRepresentation {
+public class SimpleOmdbWatchableRepresentation {
 
     @JsonProperty("Title")
     private String title;
@@ -22,8 +22,6 @@ public class OmdbWatchableSearchRepresentation {
     @JsonProperty("Year")
     private String year;
 
-    // Only IMDB ID to determine equality - two films can't have the same ID
-    @EqualsAndHashCode.Include
     @JsonProperty("imdbID")
     private String imdbId;
 

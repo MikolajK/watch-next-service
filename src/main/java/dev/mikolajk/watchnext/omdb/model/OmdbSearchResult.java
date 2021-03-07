@@ -16,7 +16,7 @@ import lombok.With;
 public class OmdbSearchResult {
 
     @JsonProperty("Search")
-    private List<OmdbWatchableSearchRepresentation> search;
+    private List<SimpleOmdbWatchableRepresentation> search;
 
     @JsonProperty("totalResults")
     private int totalResults;

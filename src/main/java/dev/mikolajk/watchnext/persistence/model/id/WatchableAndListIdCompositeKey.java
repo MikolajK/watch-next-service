@@ -9,6 +9,6 @@ import lombok.Setter;
 public class WatchableAndListIdCompositeKey implements Serializable {
 
     private String watchableId;
-    private int listId;
+    private long listId;
 
 }

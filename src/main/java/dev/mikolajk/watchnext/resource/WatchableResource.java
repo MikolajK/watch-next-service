@@ -1,5 +1,6 @@
 package dev.mikolajk.watchnext.resource;
 
+import dev.mikolajk.watchnext.resource.model.AddWatchablesToListRequestBody;
 import dev.mikolajk.watchnext.resource.model.CreateListRequestBody;
 import dev.mikolajk.watchnext.service.WatchableService;
 import dev.mikolajk.watchnext.service.model.list.DetailedWatchableListRepresentation;
@@ -51,6 +52,7 @@ public class WatchableResource {
     @Path("/list")
     public Response getLists() {
         List<SimpleWatchableListRepresentation> watchableLists = watchableService.getLists();
+
         return Response.ok(watchableLists).build();
     }
 
@@ -59,6 +61,15 @@ public class WatchableResource {
     public Response getList(@PathParam("id") long listId) {
         DetailedWatchableListRepresentation list = watchableService.getList(listId);
         return Response.ok(list).build();
+    }
+
+    @POST
+    @Path("/list/{id}/watchables")
+    public Response addToList(@PathParam("id") long listId,
+        @Valid AddWatchablesToListRequestBody requestBody) {
+        watchableService.addToList(listId, requestBody.getImdbIds());
+
+        return Response.noContent().build();
     }
 
 }

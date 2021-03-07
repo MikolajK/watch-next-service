@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 class OmdbApiTestBase {
 
+    static final String API_KEY = "test-api-key";
     static OMDbRestClient omdbRestClientMock;
 
     @BeforeAll
