@@ -1,5 +1,6 @@
 package dev.mikolajk.watchnext.service.model.watchable;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ public class DetailedWatchableRepresentation extends SimpleWatchableRepresentati
     private String genre;
     private String plotSummary;
     private String runtime;
+    private List<UserVoteRepresentation> userVotes;
 
 }
 

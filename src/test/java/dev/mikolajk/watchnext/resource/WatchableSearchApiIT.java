@@ -19,7 +19,7 @@ import org.mockito.BDDMockito;
 
 @DisplayName("Watchable Search API")
 @QuarkusTest
-class WatchableSearchApiIT extends OmdbApiTestBase {
+class WatchableSearchApiIT extends TestBase {
 
     private static final String BASE_PATH = "/watchable/search";
     private static final String POSTERS_URL = "http://posters.fakesite/";

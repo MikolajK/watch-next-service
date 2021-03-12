@@ -1,10 +1,14 @@
 package dev.mikolajk.watchnext.persistence.mapper;
 
+import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListEntity;
+import dev.mikolajk.watchnext.persistence.model.user.UserProfileEntity;
 import dev.mikolajk.watchnext.service.model.list.DetailedWatchableListRepresentation;
 import dev.mikolajk.watchnext.service.model.list.SimpleWatchableListRepresentation;
+import dev.mikolajk.watchnext.service.model.user.UserProfile;
 import dev.mikolajk.watchnext.service.model.watchable.DetailedWatchableRepresentation;
+import dev.mikolajk.watchnext.service.model.watchable.UserVoteRepresentation;
 import java.util.List;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -30,4 +34,10 @@ public interface JpaMapper {
 
     @IterableMapping(qualifiedByName = "toDetailedWatchableRepresentation")
     List<DetailedWatchableRepresentation> toDetailedWatchableRepresentationList(List<WatchableEntity> watchableIds);
+
+    @Named("toUserVoteRepresentation")
+    UserVoteRepresentation toUserVoteRepresentation(UserWatchableVoteEntity watchableVoteEntity);
+
+    @Mapping(target = "name", source = "id")
+    UserProfile toUserProfile(UserProfileEntity userProfileEntity);
 }

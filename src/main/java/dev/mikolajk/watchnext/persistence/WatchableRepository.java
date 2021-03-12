@@ -1,6 +1,7 @@
 package dev.mikolajk.watchnext.persistence;
 
 import dev.mikolajk.watchnext.persistence.model.list.UserListAssignmentEntity;
+import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListEntity;
@@ -22,4 +23,8 @@ public interface WatchableRepository {
     void saveWatchable(WatchableEntity watchableEntity);
 
     void saveWatchableListAssignment(WatchableListAssignmentEntity watchableListAssignmentEntity);
+
+    void saveUserVote(UserWatchableVoteEntity voteEntity);
+
+    List<UserWatchableVoteEntity> getUserVotesForWatchableAndList(long listId, String watchableId);
 }

@@ -32,6 +32,15 @@
       <column name="list_id" type="NUMBER" />
     </createTable>
 
+    <createTable tableName="user_vote">
+      <column name="list_id" type="NUMBER"/>
+      <column name="imdb_id" type="VARCHAR(32) "/>
+      <column name="user_id" type="VARCHAR(32) "/>
+      <column name="votes" type="NUMBER">
+        <constraints checkConstraint="CHECK (int_value &gt;= 0 AND int_value &lt;= 100)" />
+      </column>
+    </createTable>
+
     <createSequence
         incrementBy="5"
         minValue="1"

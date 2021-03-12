@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import dev.mikolajk.watchnext.omdb.model.DetailedOmdbWatchableRepresentation;
-import dev.mikolajk.watchnext.persistence.WatchableRepository;
 import dev.mikolajk.watchnext.resource.model.AddWatchablesToListRequestBody;
 import dev.mikolajk.watchnext.resource.model.CreateListRequestBody;
 import dev.mikolajk.watchnext.service.model.list.DetailedWatchableListRepresentation;
@@ -15,7 +14,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import java.util.Collections;
 import java.util.List;
-import javax.inject.Inject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -25,10 +23,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @DisplayName("Watchable List API")
-class WatchableListIT extends OmdbApiTestBase {
-
-    @Inject
-    private WatchableRepository repository;
+class WatchableListIT extends TestBase {
 
     @Nested
     @DisplayName("Create List")
@@ -61,9 +56,9 @@ class WatchableListIT extends OmdbApiTestBase {
                     .statusCode(HttpStatus.SC_OK)
                     .extract().jsonPath().getList("", SimpleWatchableListRepresentation.class);
 
-            assertThat(existingLists).hasSize(1);
-            assertThat(existingLists.get(0).getId()).isEqualTo(returnedList.getId());
-            assertThat(existingLists.get(0).getName()).isEqualTo(returnedList.getName());
+            SimpleWatchableListRepresentation lastList = existingLists.get(existingLists.size() - 1);
+            assertThat(lastList.getId()).isEqualTo(returnedList.getId());
+            assertThat(lastList.getName()).isEqualTo(returnedList.getName());
 
             DetailedWatchableListRepresentation detailedList = when()
                 .get("/watchable/list/{id}", returnedList.getId())
@@ -145,7 +140,7 @@ class WatchableListIT extends OmdbApiTestBase {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
-                .post("/watchable/list/{listId}/watchables", listId)
+                .post("/watchable/list/{listId}/watchable", listId)
                 .then()
                 .statusCode(HttpStatus.SC_NO_CONTENT);
 

@@ -1,10 +1,6 @@
 quarkus:
   datasource:
-    username: service
-    password: service
     db-kind: mariadb
-    jdbc:
-      url: jdbc:mysql://localhost:3306/watchable_watchnext
   hibernate-orm:
     log:
       sql: true

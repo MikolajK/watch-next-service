@@ -9,6 +9,7 @@ import dev.mikolajk.watchnext.persistence.UserProfileRepository;
 import dev.mikolajk.watchnext.persistence.WatchableRepository;
 import dev.mikolajk.watchnext.persistence.mapper.JpaMapper;
 import dev.mikolajk.watchnext.persistence.model.list.UserListAssignmentEntity;
+import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListEntity;
@@ -17,7 +18,9 @@ import dev.mikolajk.watchnext.service.WatchableService;
 import dev.mikolajk.watchnext.service.model.list.DetailedWatchableListRepresentation;
 import dev.mikolajk.watchnext.service.model.list.SimpleWatchableListRepresentation;
 import dev.mikolajk.watchnext.service.model.search.WatchableSearchResults;
+import dev.mikolajk.watchnext.service.model.user.UserProfile;
 import dev.mikolajk.watchnext.service.model.watchable.DetailedWatchableRepresentation;
+import dev.mikolajk.watchnext.service.model.watchable.UserVoteRepresentation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -102,6 +105,23 @@ public class OMDbWatchableService implements WatchableService {
             .toDetailedWatchableRepresentationList(watchablesByIds);
 
         detailedWatchableListRepresentation.setWatchables(watchables);
+
+        watchables.forEach(watchable -> {
+            List<UserWatchableVoteEntity> watchableVotes = watchableRepository
+                .getUserVotesForWatchableAndList(listId, watchable.getImdbId());
+            List<UserVoteRepresentation> userVoteRepresentations = new ArrayList<>();
+            watchableVotes.forEach(vote -> {
+                UserProfileEntity userProfileEntity = userProfileRepository.getUserById("dummy");
+                UserProfile userProfile = jpaMapper.toUserProfile(userProfileEntity);
+                UserVoteRepresentation userVoteRepresentation = new UserVoteRepresentation();
+                userVoteRepresentation.setUser(userProfile);
+                userVoteRepresentation.setVotes(vote.getVotes());
+                userVoteRepresentations.add(userVoteRepresentation);
+            });
+
+            watchable.setUserVotes(userVoteRepresentations);
+        });
+
         return detailedWatchableListRepresentation;
     }
 
@@ -119,6 +139,16 @@ public class OMDbWatchableService implements WatchableService {
         missingWatchableIds.forEach(this::storeWatchableData);
 
         imdbIds.forEach(id -> storeWatchableListAssignment(listId, id));
+    }
+
+    @Override
+    public void storeUserVote(long listId, String watchableId, int vote) {
+        UserWatchableVoteEntity voteEntity = new UserWatchableVoteEntity();
+        voteEntity.setListId(listId);
+        voteEntity.setWatchableId(watchableId);
+        voteEntity.setUserId("dummy");
+        voteEntity.setVotes(vote);
+        watchableRepository.saveUserVote(voteEntity);
     }
 
     private void storeWatchableListAssignment(long listId, String id) {

@@ -7,6 +7,9 @@ quarkus:
     db-kind: mariadb
     jdbc:
       url: jdbc:mysql://localhost:3306/watchable_watchnext
+  liquibase:
+    migrate-at-start: true
+    clean-at-start: true
 omdb:
   base-url: http://www.omdbapi.com/
   # api-key from env variables

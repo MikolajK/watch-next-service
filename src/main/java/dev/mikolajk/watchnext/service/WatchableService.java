@@ -16,4 +16,6 @@ public interface WatchableService {
     DetailedWatchableListRepresentation getList(long listId);
 
     void addToList(long listId, List<String> imdbIds);
+
+    void storeUserVote(long listId, String watchableId, int vote);
 }
