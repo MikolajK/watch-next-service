@@ -22,6 +22,7 @@ import dev.mikolajk.watchnext.service.model.user.UserProfile;
 import dev.mikolajk.watchnext.service.model.watchable.DetailedWatchableRepresentation;
 import dev.mikolajk.watchnext.service.model.watchable.UserVoteRepresentation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -122,7 +123,19 @@ public class OMDbWatchableService implements WatchableService {
             watchable.setUserVotes(userVoteRepresentations);
         });
 
+        detailedWatchableListRepresentation.getWatchables().sort((first, second) -> getVoteDifference(first, second));
         return detailedWatchableListRepresentation;
+    }
+
+    private int getVoteDifference(DetailedWatchableRepresentation first, DetailedWatchableRepresentation second) {
+        int totalVotesFirst = getTotalVotes(first);
+        int totalVotesSecond = getTotalVotes(second);
+        return totalVotesSecond - totalVotesFirst;
+    }
+
+    private int getTotalVotes(DetailedWatchableRepresentation watchable) {
+        return watchable.getUserVotes().stream().map(UserVoteRepresentation::getVotes)
+            .reduce(0, Integer::sum);
     }
 
     @Override

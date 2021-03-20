@@ -14,7 +14,7 @@
       <column name="title" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="year" type="VARCHAR(4)"/>
+      <column name="year" type="VARCHAR(16)"/>
     </createTable>
 
     <createTable tableName="watchable_list">
