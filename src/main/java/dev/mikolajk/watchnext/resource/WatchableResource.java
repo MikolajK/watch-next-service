@@ -6,6 +6,8 @@ import dev.mikolajk.watchnext.resource.model.RecordUserVoteRequestBody;
 import dev.mikolajk.watchnext.service.WatchableService;
 import dev.mikolajk.watchnext.service.model.list.DetailedWatchableListRepresentation;
 import dev.mikolajk.watchnext.service.model.list.SimpleWatchableListRepresentation;
+import dev.mikolajk.watchnext.service.model.user.UserProfile;
+import io.quarkus.security.Authenticated;
 import java.util.List;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -26,6 +28,7 @@ import javax.ws.rs.core.Response;
 @Path("/watchable")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class WatchableResource {
 
     private final WatchableService watchableService;
@@ -82,6 +85,13 @@ public class WatchableResource {
         @Valid RecordUserVoteRequestBody requestBody) {
         watchableService.storeUserVote(listId, watchableId, requestBody.getVotes());
         return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/list/{listId}/user")
+    public Response getAssignedUsers(@PathParam("listId") long listId) {
+        List<UserProfile> assignedUsers = watchableService.getAssignedUsers(listId);
+        return Response.ok(assignedUsers).build();
     }
 
 }

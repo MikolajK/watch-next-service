@@ -27,4 +27,6 @@ public interface WatchableRepository {
     void saveUserVote(UserWatchableVoteEntity voteEntity);
 
     List<UserWatchableVoteEntity> getUserVotesForWatchableAndList(long listId, String watchableId);
+
+    List<UserListAssignmentEntity> getUsersForList(long listId);
 }

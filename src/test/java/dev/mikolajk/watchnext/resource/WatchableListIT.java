@@ -1,7 +1,5 @@
 package dev.mikolajk.watchnext.resource;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -35,7 +33,7 @@ class WatchableListIT extends TestBase {
             String listName = "Watching With Monica";
             CreateListRequestBody createListRequestBody = new CreateListRequestBody(listName);
 
-            SimpleWatchableListRepresentation returnedList = given()
+            SimpleWatchableListRepresentation returnedList = authenticatedRequest()
                 .body(createListRequestBody)
                 .contentType(ContentType.JSON)
                 .when()
@@ -50,7 +48,7 @@ class WatchableListIT extends TestBase {
             assertThat(returnedList.getName()).isEqualTo(listName);
 
             List<SimpleWatchableListRepresentation> existingLists =
-                when()
+                authenticatedRequest()
                     .get("/watchable/list")
                     .then()
                     .statusCode(HttpStatus.SC_OK)
@@ -60,7 +58,7 @@ class WatchableListIT extends TestBase {
             assertThat(lastList.getId()).isEqualTo(returnedList.getId());
             assertThat(lastList.getName()).isEqualTo(returnedList.getName());
 
-            DetailedWatchableListRepresentation detailedList = when()
+            DetailedWatchableListRepresentation detailedList = authenticatedRequest()
                 .get("/watchable/list/{id}", returnedList.getId())
                 .then()
                 .statusCode(HttpStatus.SC_OK)
@@ -77,7 +75,7 @@ class WatchableListIT extends TestBase {
             String listName = RandomStringUtils.randomAlphabetic(65);
             CreateListRequestBody createListRequestBody = new CreateListRequestBody(listName);
 
-            given()
+            authenticatedRequest()
                 .body(createListRequestBody)
                 .contentType(ContentType.JSON)
                 .when()
@@ -93,7 +91,7 @@ class WatchableListIT extends TestBase {
             String listName = "";
             CreateListRequestBody createListRequestBody = new CreateListRequestBody(listName);
 
-            given()
+            authenticatedRequest()
                 .body(createListRequestBody)
                 .contentType(ContentType.JSON)
                 .when()
@@ -123,7 +121,7 @@ class WatchableListIT extends TestBase {
             CreateListRequestBody createListRequestBody = new CreateListRequestBody();
             createListRequestBody.setName("Test List");
 
-            long listId = given()
+            long listId = authenticatedRequest()
                 .body(createListRequestBody)
                 .contentType(ContentType.JSON)
                 .when()
@@ -136,7 +134,7 @@ class WatchableListIT extends TestBase {
             AddWatchablesToListRequestBody requestBody = new AddWatchablesToListRequestBody();
             requestBody.setImdbIds(watchableIds);
 
-            given()
+            authenticatedRequest()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
@@ -145,7 +143,7 @@ class WatchableListIT extends TestBase {
                 .statusCode(HttpStatus.SC_NO_CONTENT);
 
             DetailedWatchableListRepresentation list =
-                when()
+                authenticatedRequest()
                     .get("/watchable/list/{listId}", listId)
                     .then()
                     .statusCode(HttpStatus.SC_OK)

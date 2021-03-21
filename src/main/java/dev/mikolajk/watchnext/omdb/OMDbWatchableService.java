@@ -22,7 +22,6 @@ import dev.mikolajk.watchnext.service.model.user.UserProfile;
 import dev.mikolajk.watchnext.service.model.watchable.DetailedWatchableRepresentation;
 import dev.mikolajk.watchnext.service.model.watchable.UserVoteRepresentation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -162,6 +161,21 @@ public class OMDbWatchableService implements WatchableService {
         voteEntity.setUserId("dummy");
         voteEntity.setVotes(vote);
         watchableRepository.saveUserVote(voteEntity);
+    }
+
+    @Override
+    public List<UserProfile> getAssignedUsers(long listId) {
+        // Check if the user can access the list
+        getListEntityOrReturnNotFound(listId);
+
+        List<UserListAssignmentEntity> userAssignments = watchableRepository.getUsersForList(listId);
+
+        List<String> userIds = userAssignments.stream().map(UserListAssignmentEntity::getUserId)
+            .collect(Collectors.toList());
+
+        List<UserProfileEntity> users = userProfileRepository.getUsers(userIds);
+
+        return jpaMapper.toUserProfiles(users);
     }
 
     private void storeWatchableListAssignment(long listId, String id) {

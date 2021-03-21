@@ -1,6 +1,5 @@
 package dev.mikolajk.watchnext.resource;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import dev.mikolajk.watchnext.omdb.model.OmdbSearchResult;
@@ -47,7 +46,7 @@ class WatchableSearchApiIT extends TestBase {
             BDDMockito
                 .given(omdbRestClientMock.searchByTitle(queryValue, API_KEY, 1)).willReturn(expectedResults);
 
-            WatchableSearchResults results = given()
+            WatchableSearchResults results = authenticatedRequest()
                 .queryParam("query", queryValue)
                 .contentType(ContentType.JSON)
                 .when()

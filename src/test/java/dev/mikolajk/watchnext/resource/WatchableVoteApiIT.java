@@ -1,8 +1,5 @@
 package dev.mikolajk.watchnext.resource;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import dev.mikolajk.watchnext.omdb.model.DetailedOmdbWatchableRepresentation;
 import dev.mikolajk.watchnext.resource.model.AddWatchablesToListRequestBody;
 import dev.mikolajk.watchnext.resource.model.CreateListRequestBody;
@@ -37,7 +34,7 @@ public class WatchableVoteApiIT extends TestBase {
             CreateListRequestBody createListRequestBody = new CreateListRequestBody();
             createListRequestBody.setName("Test List");
 
-            long listId = given()
+            long listId = authenticatedRequest()
                 .body(createListRequestBody)
                 .contentType(ContentType.JSON)
                 .when()
@@ -50,7 +47,7 @@ public class WatchableVoteApiIT extends TestBase {
             AddWatchablesToListRequestBody requestBody = new AddWatchablesToListRequestBody();
             requestBody.setImdbIds(watchableIds);
 
-            given()
+            authenticatedRequest()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
@@ -61,7 +58,7 @@ public class WatchableVoteApiIT extends TestBase {
             RecordUserVoteRequestBody voteRequestBody = new RecordUserVoteRequestBody();
             voteRequestBody.setVotes(5);
 
-            given()
+            authenticatedRequest()
                 .body(voteRequestBody)
                 .contentType(ContentType.JSON)
                 .when()

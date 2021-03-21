@@ -2,11 +2,11 @@ package dev.mikolajk.watchnext.persistence.jpa;
 
 import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_LISTS_FOR_USER_QUERY_NAME;
 import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_LIST_BY_ID_AND_USER_ID_NAME;
+import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_USERS_FOR_LIST_ID_NAME;
 import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_USERS_VOTES_FOR_WATCHABLE_AND_LIST_NAME;
 import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_WATCHABLES_BY_LIST_OF_IDS_NAME;
 
 import dev.mikolajk.watchnext.persistence.WatchableRepository;
-import dev.mikolajk.watchnext.persistence.model.id.WatchableUserAndListIdCompositeKey;
 import dev.mikolajk.watchnext.persistence.model.list.UserListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
@@ -94,6 +94,14 @@ public class JpaWatchableRepository implements WatchableRepository {
             .createNamedQuery(GET_USERS_VOTES_FOR_WATCHABLE_AND_LIST_NAME, UserWatchableVoteEntity.class)
             .setParameter("listId", listId)
             .setParameter("watchableId", watchableId)
+            .getResultList();
+    }
+
+    @Override
+    public List<UserListAssignmentEntity> getUsersForList(long listId) {
+        return entityManager
+            .createNamedQuery(GET_USERS_FOR_LIST_ID_NAME, UserListAssignmentEntity.class)
+            .setParameter("listId", listId)
             .getResultList();
     }
 }

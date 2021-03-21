@@ -6,6 +6,7 @@ public class Queries {
     public static final String GET_LIST_BY_ID_AND_USER_ID_NAME = "getListByIdAndUserId";
     public static final String GET_WATCHABLES_BY_LIST_OF_IDS_NAME = "getWatchablesByListOfIds";
     public static final String GET_USERS_VOTES_FOR_WATCHABLE_AND_LIST_NAME = "getUsersVotesForWatchableAndList";
+    public static final String GET_USERS_FOR_LIST_ID_NAME = "getUsersForListId";
 
 
     public static final String GET_LISTS_FOR_USER_QUERY = "SELECT DISTINCT list "
@@ -27,4 +28,8 @@ public class Queries {
         + "FROM UserWatchableVoteEntity vote "
         + "WHERE vote.listId = :listId "
         + "AND vote.watchableId = :watchableId";
+
+    public static final String GET_USERS_FOR_LIST_ID = "SELECT DISTINCT user "
+        + "FROM UserListAssignmentEntity user "
+        + "WHERE user.listId = :listId";
 }

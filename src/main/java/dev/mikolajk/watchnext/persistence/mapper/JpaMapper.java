@@ -39,5 +39,9 @@ public interface JpaMapper {
     UserVoteRepresentation toUserVoteRepresentation(UserWatchableVoteEntity watchableVoteEntity);
 
     @Mapping(target = "name", source = "id")
+    @Named("toUserProfile")
     UserProfile toUserProfile(UserProfileEntity userProfileEntity);
+
+    @IterableMapping(qualifiedByName = "toUserProfile")
+    List<UserProfile> toUserProfiles(List<UserProfileEntity> users);
 }

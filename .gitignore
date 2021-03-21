@@ -6,3 +6,7 @@
 # Maven
 log/
 target/
+
+# Not commiting config files - config present in environment where service runs
+src/main/resources/application.yml
+src/test/resources/application.yml
