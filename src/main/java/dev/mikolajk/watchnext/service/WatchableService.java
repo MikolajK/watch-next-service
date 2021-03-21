@@ -21,4 +21,8 @@ public interface WatchableService {
     void storeUserVote(long listId, String watchableId, int vote);
 
     List<UserProfile> getAssignedUsers(long listId);
+
+    void assignUser(long listId, String username);
+
+    void unassignUser(long listId, String username);
 }

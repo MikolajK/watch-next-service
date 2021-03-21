@@ -1,19 +1,18 @@
 package dev.mikolajk.watchnext.omdb;
 
 import static dev.mikolajk.watchnext.service.errors.ApiErrorMessages.LIST_NOT_FOUND;
-import static dev.mikolajk.watchnext.service.errors.ApiErrorMessages.USER_NOT_FOUND_IN_DATABASE;
 
 import dev.mikolajk.watchnext.omdb.model.DetailedOmdbWatchableRepresentation;
 import dev.mikolajk.watchnext.omdb.model.OmdbSearchResult;
 import dev.mikolajk.watchnext.persistence.UserProfileRepository;
 import dev.mikolajk.watchnext.persistence.WatchableRepository;
 import dev.mikolajk.watchnext.persistence.mapper.JpaMapper;
+import dev.mikolajk.watchnext.persistence.model.id.UserIdAndListIdCompositeKey;
 import dev.mikolajk.watchnext.persistence.model.list.UserListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableListEntity;
-import dev.mikolajk.watchnext.persistence.model.user.UserProfileEntity;
 import dev.mikolajk.watchnext.service.WatchableService;
 import dev.mikolajk.watchnext.service.model.list.DetailedWatchableListRepresentation;
 import dev.mikolajk.watchnext.service.model.list.SimpleWatchableListRepresentation;
@@ -21,6 +20,7 @@ import dev.mikolajk.watchnext.service.model.search.WatchableSearchResults;
 import dev.mikolajk.watchnext.service.model.user.UserProfile;
 import dev.mikolajk.watchnext.service.model.watchable.DetailedWatchableRepresentation;
 import dev.mikolajk.watchnext.service.model.watchable.UserVoteRepresentation;
+import io.quarkus.security.identity.SecurityIdentity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 
 @ApplicationScoped
@@ -41,17 +40,19 @@ public class OMDbWatchableService implements WatchableService {
     private final WatchableRepository watchableRepository;
     private final UserProfileRepository userProfileRepository;
     private final JpaMapper jpaMapper;
+    private final SecurityIdentity securityIdentity;
 
     @Inject
     public OMDbWatchableService(OMDbRestClient omDbRestClient, OMDbConfiguration omDbConfiguration,
         OmdbSearchResultMapper omdbSearchResultMapper, WatchableRepository watchableRepository,
-        UserProfileRepository userProfileRepository, JpaMapper jpaMapper) {
+        UserProfileRepository userProfileRepository, JpaMapper jpaMapper, SecurityIdentity securityIdentity) {
         this.omDbRestClient = omDbRestClient;
         this.omDbConfiguration = omDbConfiguration;
         this.omdbSearchResultMapper = omdbSearchResultMapper;
         this.watchableRepository = watchableRepository;
         this.userProfileRepository = userProfileRepository;
         this.jpaMapper = jpaMapper;
+        this.securityIdentity = securityIdentity;
     }
 
     @Override
@@ -64,18 +65,13 @@ public class OMDbWatchableService implements WatchableService {
 
     @Override
     public SimpleWatchableListRepresentation createList(String listName) {
-        UserProfileEntity user = userProfileRepository.getUserById("dummy");
-        if (user == null) {
-            throw new InternalServerErrorException(USER_NOT_FOUND_IN_DATABASE);
-        }
-
         WatchableListEntity list = new WatchableListEntity();
         list.setName(listName);
         watchableRepository.saveList(list);
 
         UserListAssignmentEntity watchableListAssignmentEntity = new UserListAssignmentEntity();
         watchableListAssignmentEntity.setListId(list.getListId());
-        watchableListAssignmentEntity.setUserId("dummy");
+        watchableListAssignmentEntity.setUserId(securityIdentity.getPrincipal().getName());
         list.setUsers(Collections.singletonList(watchableListAssignmentEntity));
 
         watchableRepository.saveUserListAssignment(watchableListAssignmentEntity);
@@ -85,7 +81,8 @@ public class OMDbWatchableService implements WatchableService {
 
     @Override
     public List<SimpleWatchableListRepresentation> getLists() {
-        List<WatchableListEntity> listEntities = watchableRepository.getLists("dummy");
+        List<WatchableListEntity> listEntities = watchableRepository
+            .getLists(securityIdentity.getPrincipal().getName());
 
         return jpaMapper.toSimpleWatchableListRepresentationList(listEntities);
     }
@@ -111,8 +108,7 @@ public class OMDbWatchableService implements WatchableService {
                 .getUserVotesForWatchableAndList(listId, watchable.getImdbId());
             List<UserVoteRepresentation> userVoteRepresentations = new ArrayList<>();
             watchableVotes.forEach(vote -> {
-                UserProfileEntity userProfileEntity = userProfileRepository.getUserById("dummy");
-                UserProfile userProfile = jpaMapper.toUserProfile(userProfileEntity);
+                UserProfile userProfile = userProfileRepository.getUserById(securityIdentity.getPrincipal().getName());
                 UserVoteRepresentation userVoteRepresentation = new UserVoteRepresentation();
                 userVoteRepresentation.setUser(userProfile);
                 userVoteRepresentation.setVotes(vote.getVotes());
@@ -122,7 +118,7 @@ public class OMDbWatchableService implements WatchableService {
             watchable.setUserVotes(userVoteRepresentations);
         });
 
-        detailedWatchableListRepresentation.getWatchables().sort((first, second) -> getVoteDifference(first, second));
+        detailedWatchableListRepresentation.getWatchables().sort(this::getVoteDifference);
         return detailedWatchableListRepresentation;
     }
 
@@ -158,7 +154,7 @@ public class OMDbWatchableService implements WatchableService {
         UserWatchableVoteEntity voteEntity = new UserWatchableVoteEntity();
         voteEntity.setListId(listId);
         voteEntity.setWatchableId(watchableId);
-        voteEntity.setUserId("dummy");
+        voteEntity.setUserId(securityIdentity.getPrincipal().getName());
         voteEntity.setVotes(vote);
         watchableRepository.saveUserVote(voteEntity);
     }
@@ -173,9 +169,31 @@ public class OMDbWatchableService implements WatchableService {
         List<String> userIds = userAssignments.stream().map(UserListAssignmentEntity::getUserId)
             .collect(Collectors.toList());
 
-        List<UserProfileEntity> users = userProfileRepository.getUsers(userIds);
+        return userProfileRepository.getUsers(userIds);
+    }
 
-        return jpaMapper.toUserProfiles(users);
+    @Override
+    public void assignUser(long listId, String username) {
+        // Check if the user can access the list
+        getListEntityOrReturnNotFound(listId);
+
+        // Check if user exists
+        userProfileRepository.getUserById(username);
+
+        UserListAssignmentEntity userListAssignment = new UserListAssignmentEntity();
+        userListAssignment.setListId(listId);
+        userListAssignment.setUserId(username);
+        watchableRepository.saveUserListAssignment(userListAssignment);
+    }
+
+    @Override
+    public void unassignUser(long listId, String username) {
+        // Check if the user can access the list
+        getListEntityOrReturnNotFound(listId);
+        UserIdAndListIdCompositeKey key = new UserIdAndListIdCompositeKey();
+        key.setListId(listId);
+        key.setUserId(username);
+        watchableRepository.deleteUserListAssignment(key);
     }
 
     private void storeWatchableListAssignment(long listId, String id) {
@@ -195,7 +213,7 @@ public class OMDbWatchableService implements WatchableService {
     }
 
     private WatchableListEntity getListEntityOrReturnNotFound(long listId) {
-        return watchableRepository.getList("dummy", listId)
+        return watchableRepository.getList(securityIdentity.getPrincipal().getName(), listId)
             .orElseThrow(() -> new NotFoundException(LIST_NOT_FOUND));
     }
 }

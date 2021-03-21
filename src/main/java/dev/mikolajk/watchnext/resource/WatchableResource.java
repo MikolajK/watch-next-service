@@ -1,6 +1,7 @@
 package dev.mikolajk.watchnext.resource;
 
 import dev.mikolajk.watchnext.resource.model.AddWatchablesToListRequestBody;
+import dev.mikolajk.watchnext.resource.model.AssignUserRequestBody;
 import dev.mikolajk.watchnext.resource.model.CreateListRequestBody;
 import dev.mikolajk.watchnext.resource.model.RecordUserVoteRequestBody;
 import dev.mikolajk.watchnext.service.WatchableService;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -92,6 +94,20 @@ public class WatchableResource {
     public Response getAssignedUsers(@PathParam("listId") long listId) {
         List<UserProfile> assignedUsers = watchableService.getAssignedUsers(listId);
         return Response.ok(assignedUsers).build();
+    }
+
+    @POST
+    @Path("/list/{listId}/user")
+    public Response assignUser(@PathParam("listId") long listId, AssignUserRequestBody requestBody) {
+        watchableService.assignUser(listId, requestBody.getUsername());
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("/list/{listId}/user/{username}")
+    public Response unassignUser(@PathParam("listId") long listId, @PathParam("username") String username) {
+        watchableService.unassignUser(listId, username);
+        return Response.noContent().build();
     }
 
 }

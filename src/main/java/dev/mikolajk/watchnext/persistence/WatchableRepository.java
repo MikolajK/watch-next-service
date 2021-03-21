@@ -1,5 +1,6 @@
 package dev.mikolajk.watchnext.persistence;
 
+import dev.mikolajk.watchnext.persistence.model.id.UserIdAndListIdCompositeKey;
 import dev.mikolajk.watchnext.persistence.model.list.UserListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
@@ -29,4 +30,6 @@ public interface WatchableRepository {
     List<UserWatchableVoteEntity> getUserVotesForWatchableAndList(long listId, String watchableId);
 
     List<UserListAssignmentEntity> getUsersForList(long listId);
+
+    void deleteUserListAssignment(UserIdAndListIdCompositeKey userListAssignmentEntity);
 }

@@ -6,6 +6,8 @@ import dev.mikolajk.watchnext.omdb.model.SimpleOmdbWatchableRepresentation;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
 import dev.mikolajk.watchnext.service.model.search.WatchableSearchResults;
 import dev.mikolajk.watchnext.service.model.watchable.SimpleWatchableRepresentation;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,7 +28,7 @@ public interface OmdbSearchResultMapper {
         watchableSearchResults.setTotalPages((totalResults / 10) + Math.min(1, totalResults % 10));
 
         watchableSearchResults.setResults(
-            omdbSearchResult.getSearch()
+            Optional.ofNullable(omdbSearchResult.getSearch()).orElse(new ArrayList<>())
                 .stream()
                 .map(this::toWatchableSearchRepresentation)
                 .collect(Collectors.toList())

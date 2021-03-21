@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class UserProfile {
 
-    private String name = "dummy";
+    private String name;
 
 }

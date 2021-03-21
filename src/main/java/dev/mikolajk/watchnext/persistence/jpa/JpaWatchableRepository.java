@@ -7,6 +7,7 @@ import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_USERS_VOTES_FOR
 import static dev.mikolajk.watchnext.persistence.jpa.Queries.GET_WATCHABLES_BY_LIST_OF_IDS_NAME;
 
 import dev.mikolajk.watchnext.persistence.WatchableRepository;
+import dev.mikolajk.watchnext.persistence.model.id.UserIdAndListIdCompositeKey;
 import dev.mikolajk.watchnext.persistence.model.list.UserListAssignmentEntity;
 import dev.mikolajk.watchnext.persistence.model.list.UserWatchableVoteEntity;
 import dev.mikolajk.watchnext.persistence.model.list.WatchableEntity;
@@ -103,5 +104,11 @@ public class JpaWatchableRepository implements WatchableRepository {
             .createNamedQuery(GET_USERS_FOR_LIST_ID_NAME, UserListAssignmentEntity.class)
             .setParameter("listId", listId)
             .getResultList();
+    }
+
+    @Override
+    public void deleteUserListAssignment(UserIdAndListIdCompositeKey key) {
+        UserListAssignmentEntity userListAssignmentEntity = entityManager.find(UserListAssignmentEntity.class, key);
+        entityManager.remove(userListAssignmentEntity);
     }
 }
